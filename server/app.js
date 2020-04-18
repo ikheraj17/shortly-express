@@ -17,17 +17,17 @@ app.use(express.static(path.join(__dirname, '../public')));
 
 
 
-app.get('/', 
+app.get('/',
 (req, res) => {
   res.render('index');
 });
 
-app.get('/create', 
+app.get('/create',
 (req, res) => {
   res.render('index');
 });
 
-app.get('/links', 
+app.get('/links',
 (req, res, next) => {
   models.Links.getAll()
     .then(links => {
@@ -38,9 +38,10 @@ app.get('/links',
     });
 });
 
-app.post('/links', 
+app.post('/links',
 (req, res, next) => {
   var url = req.body.url;
+  console.log(url);
   if (!models.Links.isValidUrl(url)) {
     // send back a 404 if link is not valid
     return res.sendStatus(404);
@@ -74,9 +75,26 @@ app.post('/links',
     });
 });
 
+
 /************************************************************/
 // Write your authentication routes here
 /************************************************************/
+app.post('/signup', (req, res, next) => {
+  console.log('this is the request: ', req.body.username);
+  //  console.log('this is the req: ', req.body.username);
+  var options = {username : req.body.username,
+  password : req.body.password};
+
+  models.Users.create(options)
+    //if success
+    .then(() => {
+      res.redirect('/');
+    })
+    .catch(() => {
+      res.redirect('/signup');
+    });
+
+});
 
 
 
