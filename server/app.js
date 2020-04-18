@@ -80,8 +80,6 @@ app.post('/links',
 // Write your authentication routes here
 /************************************************************/
 app.post('/signup', (req, res, next) => {
-  console.log('this is the request: ', req.body.username);
-  //  console.log('this is the req: ', req.body.username);
   var options = {username : req.body.username,
   password : req.body.password};
 
@@ -92,6 +90,28 @@ app.post('/signup', (req, res, next) => {
     })
     .catch(() => {
       res.redirect('/signup');
+    });
+
+});
+
+app.post('/login', (req, res, next) => {
+
+  //check for existing user
+  return models.Users.get({ username: req.body.username })
+    .then((result) => {
+      if (!result) {
+        res.redirect('/login');
+      } else {
+        var attemptedPass = req.body.password;
+        var actualPass = result.password;
+        var userSalt = result.salt;
+        // compare password
+        if (models.Users.compare(attemptedPass, actualPass, userSalt)) {
+          res.redirect('/');
+        } else {
+          res.redirect('/login');
+        }
+      }
     });
 
 });
