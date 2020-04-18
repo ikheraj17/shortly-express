@@ -1,6 +1,6 @@
 const parseCookies = (req, res, next) => {
 
-  if(!req.headers.cookie){
+  if (!req.headers.cookie) {
     req.cookies = {};
     next();
     return;
