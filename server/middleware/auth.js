@@ -10,43 +10,35 @@ const Promise = require('bluebird');
 //         return models.Sessions.get({id});
 //       })
 //       .then((sessionHash) => {
-//         // console.log('should be a hash?!', sessionHash);
 //         req.session = { hash: sessionHash.hash };
 //         res.cookies = { shortlyid: sessionHash.hash };
-//         // console.log('this is the response', res.cookies);
-//         // console.log('this is the request', req.session);
-//         // return;
 //         next();
 //       });
 //   }
 
 //   if (req.cookies.shortlyid) {
-//     // console.log('this is the else part: ', req);
-//     // our request object has a prop called
-//     // cookies : { shortlyid : 'asdasdsadadsadd'}
-//     // return models.Sessions.get()
-//     //set alias to request hash
+
 //     var hash = req.cookies.shortlyid;
 //     models.Sessions.get({hash})
-//       .then((data) => {
-//         console.log(data);
-//         if (data.userId) {
-//           return models.Sessions.create();
-//         }
-//       })
-//       .then((results) => {
-//         // console.log('LOOKS GOOD', sessionObj);
-//         // console.log('new session object', req);
-//         return models.Sessions.get({id: results.insertId});
-//       })
+
 //       .then((session) => {
-//         res.cookies = { shortlyid: session.hash };
-//         console.log('cookies', res.cookies);
-//         return session;
+//         if (!session) {
+//           throw session;
+//         } else {
+//           console.log('SESSSSSSION', session);
+//           //console.log('COOKIIIIEEE', res.cookies);
+//           return session;
+//         }
+//         // var hash = req.cookies.shortlyid;
+//         // res.cookies = { shortlyid: session.hash };
 //       })
 //       .then((session) => {
 //         req.session = session;
-//         console.log('session: ', req);
+//         //console.log('session: ', req);
+//         next();
+//       })
+//       .catch((err) => {
+//         next(err);
 //       });
 //   }
 // };
@@ -79,4 +71,14 @@ module.exports.createSession = (req, res, next) => {
       req.session = session;
       next();
     });
+};
+
+// HELPER FUNCTION
+
+module.exports.verifySession = (req, res, next) => {
+  if (!models.Sessions.isLoggedIn(req.session)) {
+    res.redirect('/login');
+  } else {
+    next();
+  }
 };
